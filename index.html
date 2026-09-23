@@ -72,6 +72,7 @@
         var count = 0; const MAX = 10;
         var cv = document.getElementById('canvas');
         var fl = document.getElementById('floor');
+        
         function initFloor() { 
             fl.innerHTML = ''; 
             for (var i = 0; i < 20; i++) { 
@@ -81,21 +82,31 @@
                 var f = document.createElement('div'); f.className = 'purgatory-flame'; f.innerHTML = '🔥'; f.style.left = (j * 8.5) + (Math.random() * 4) + '%'; f.style.animationDelay = (Math.random() * 0.8) + 's'; fl.appendChild(f);
             }
         }
+        
         function addPrayer() {
             if (count < MAX) {
                 count++;
                 document.getElementById('count-lbl').innerText = "செபங்கள்: " + count + " / " + MAX;
                 document.getElementById('souls-lbl').innerText = "மீட்கப்பட்ட ஆத்துமாக்கள்: " + (count * 1000).toLocaleString() + " / 10,000";
+                
+                // FIXED REMOVAL LOGIC: Safely take away 2 sad sprites from the collection list cleanly
                 var children = fl.getElementsByClassName('broken-soul-sprite');
-                if (children.length >= 2) { children.remove(); children.remove(); }
+                if (children.length >= 2) { 
+                    fl.removeChild(children[0]); 
+                    fl.removeChild(children[0]); 
+                }
+                
                 var flames = fl.getElementsByClassName('purgatory-flame');
                 for (var i = 0; i < flames.length; i++) { flames[i].style.opacity = (0.3 * (1 - count/MAX)); }
+                
                 for (var k = 0; k < 10; k++) { makeAngel(k); }
+                
                 if (count === MAX) {
                     var btn = document.getElementById('trigger'); btn.disabled = true; btn.innerText = "10,000 ஆன்மாக்கள் மீட்பு! ✨"; btn.style.background = "#2E7D32"; fl.innerHTML = ''; 
                 }
             }
         }
+        
         function makeAngel(i) {
             setTimeout(function() {
                 var a = document.createElement('div'); a.className = 'flying-angel'; a.innerHTML = '👼';
@@ -107,6 +118,7 @@
                 setTimeout(function() { a.remove(); }, 2800);
             }, i * 100);
         }
+        
         function downloadThisApp() {
             var documentSource = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
             var blobElement = new Blob([documentSource], { type: "text/html" });
